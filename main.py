@@ -20,16 +20,9 @@ from PIL import Image
 import sqlite3
 import spacy
 
-# Function to fetch YouTube video title
-def fetch_yt_video(link):
-    return link  # Placeholder for function, adjust as needed
+nltk.download("stopwords")
+nltk.download("punkt")
 
-# Function to generate download link for dataframe
-def get_table_download_link(df, filename, text):
-    csv = df.to_csv(index=False)
-    b64 = base64.b64encode(csv.encode()).decode()
-    href = f'<a href="data:file/csv;base64,{b64}" download="{filename}">{text}</a>'
-    return href
 
 # Function to read PDF and return text
 def pdf_reader(file):
@@ -65,10 +58,7 @@ def run():
     # Handling database and tables
     connection = sqlite3.connect("se2project.db")
 
-    # connection = pymysql.connect(host='localhost', user='root', password='')
     cursor = connection.cursor()
-    # cursor.execute("CREATE DATABASE IF NOT EXISTS SRA;")
-    # connection.select_db("SRA")
     table_sql = """
                 CREATE TABLE IF NOT EXISTS user_data (
                     ID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -105,6 +95,12 @@ def run():
                     st.text('Email: ' + resume_data['email'])
                     st.text('Contact: ' + resume_data['mobile_number'])
                     st.text('Resume pages: ' + str(resume_data['no_of_pages']))
+
+                    skills_df = pd.DataFrame(resume_data["skills"], columns=["SKILLS"])
+                    st.table(skills_df)
+
+                    experience_df = pd.DataFrame(resume_data["experience"], columns=["EXPERIENCES"])
+                    st.table(experience_df)
                 except KeyError:
                     pass
                 cand_level = ''
