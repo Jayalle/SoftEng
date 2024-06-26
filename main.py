@@ -6,17 +6,19 @@ import datetime
 import random
 import io
 import nltk
+
+# Ensure NLTK data path includes the correct directory
 nltk.data.path.append("../Uploaded_Resumes")
+
+# Download NLTK resources if not already downloaded
+nltk.download("stopwords")
+nltk.download("punkt")
 
 from pydparser import ResumeParser
 from pdfminer.high_level import extract_text
 from PIL import Image
 import sqlite3
 import spacy
-
-nltk.download("stopwords")
-nltk.download("punkt")
-
 
 # Function to fetch YouTube video title
 def fetch_yt_video(link):
@@ -57,13 +59,8 @@ def insert_data(name, email, res_score, timestamp, no_of_pages, reco_field, cand
 
 # Main function to run the application
 def run():
-    st.title("Smart Resume Analyzer")
-    st.sidebar.markdown("# Choose User")
-    activities = ["Normal User", "Admin"]
-    choice = st.sidebar.selectbox("Choose among the given options:", activities)
-    img = Image.open('./Logo/SRA_Logo.jpg')
-    img = img.resize((250, 250))
-    st.image(img)
+    st.title("SkillSync: Job Recommendation")
+    choice = "Normal User"
 
     # Handling database and tables
     connection = sqlite3.connect("se2project.db")
