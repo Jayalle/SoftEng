@@ -7,7 +7,6 @@ import sqlite3
 from pydparser import ResumeParser
 from pdfminer.high_level import extract_text
 from PIL import Image
-import spacy
 
 # Ensure NLTK data path includes the correct directory
 nltk.data.path.append("../Uploaded_Resumes")
@@ -39,6 +38,41 @@ def insert_data(name, email, res_score, timestamp, no_of_pages, reco_field, cand
     connection.commit()
     connection.close()
 
+# Function to recommend jobs based on the resume
+def recommend_jobs(field, skills):
+    csv_files = {
+        'Data Science': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\data_scientist.xlsx',
+        'Web Development': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\web_developer.xlsx',
+        'Android Development': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\java_dev.xlsx',
+        'IOS Development': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\ios_dev.xlsx',
+        'UI-UX Development': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\ui_ux.xlsx'
+    }
+
+    if field not in csv_files:
+        return []
+
+    try:
+        df = pd.read_excel(csv_files[field])
+    except UnicodeDecodeError:
+        df = pd.read_excel(csv_files[field], encoding='latin1')
+
+    recommended_jobs = []
+    for index, row in df.iterrows():
+        # Convert description to string and handle NaN values
+        job_description = str(row['description']).lower() if pd.notna(row['description']) else ''
+        job_keywords = job_description.split()
+        matched_skills = [skill for skill in skills if skill.lower() in job_keywords]
+
+        if matched_skills:
+            recommended_jobs.append({
+                'Title': row['title'],
+                'Company': row['company'],
+                'Location': row['location'],
+                'Job URL': row['job_url'],
+                'Matched Skills': matched_skills
+            })
+
+    return recommended_jobs
 # Main function to run the application
 def run():
     st.title("SkillSync: Job Recommendation")
@@ -107,80 +141,54 @@ def run():
                 # Insert data into database
                 insert_data(resume_data['name'], resume_data['email'], 'NA', str(datetime.datetime.now()), resume_data['no_of_pages'], 'NA', cand_level, str(resume_data['skills']), 'NA', 'NA')
 
-
-                ##  recommendation
-                ds_keyword = ['tensorflow', 'keras', 'pytorch', 'machine learning', 'deep Learning', 'flask',
-                'streamlit']
-                web_keyword = ['react', 'django', 'node jS', 'react js', 'php', 'laravel', 'magento', 'wordpress',
-                'javascript', 'angular js', 'c#', 'flask']
-                android_keyword = ['android', 'android development', 'flutter', 'kotlin', 'xml', 'kivy']
-                ios_keyword = ['ios', 'ios development', 'swift', 'cocoa', 'cocoa touch', 'xcode']
-                uiux_keyword = ['ux', 'adobe xd', 'figma', 'zeplin', 'balsamiq', 'ui', 'prototyping', 'wireframes',
-                                'storyframes', 'adobe photoshop', 'photoshop', 'editing', 'adobe illustrator',
-                                'illustrator', 'adobe after effects', 'after effects', 'adobe premier pro',
-                                'premier pro', 'adobe indesign', 'indesign', 'wireframe', 'solid', 'grasp',
-                                'user research', 'user experience']
-                
+                # Job recommendation logic
                 recommended_skills = []
                 reco_field = ''
-                rec_course = ''
-                ## Courses recommendation
-                for i in resume_data['skills']:
-                    ## Data science recommendation
-                    if i.lower() in ds_keyword:
-                        print(i.lower())
+                ds_keyword = ['tensorflow', 'keras', 'pytorch', 'machine learning', 'deep learning', 'flask', 'streamlit']
+                web_keyword = ['react', 'django', 'node js', 'react js', 'php', 'laravel', 'magento', 'wordpress', 'javascript', 'angular js', 'c#', 'flask']
+                android_keyword = ['android', 'android development', 'flutter', 'kotlin', 'xml', 'kivy']
+                ios_keyword = ['ios', 'ios development', 'swift', 'cocoa', 'cocoa touch', 'xcode']
+                uiux_keyword = ['ux', 'adobe xd', 'figma', 'zeplin', 'balsamiq', 'ui', 'prototyping', 'wireframes', 'storyframes', 'adobe photoshop', 'photoshop', 'editing', 'adobe illustrator', 'illustrator', 'adobe after effects', 'after effects', 'adobe premier pro', 'premier pro', 'adobe indesign', 'indesign', 'wireframe', 'solid', 'grasp', 'user research', 'user experience']
+
+                for skill in resume_data['skills']:
+                    skill_lower = skill.lower()
+                    if skill_lower in ds_keyword:
                         reco_field = 'Data Science'
-                        st.success("** Our analysis says you are looking for Data Science Jobs.**")
-                        recommended_skills = ['Data Visualization', 'Predictive Analysis', 'Statistical Modeling',
-                                              'Data Mining', 'Clustering & Classification', 'Data Analytics',
-                                              'Quantitative Analysis', 'Web Scraping', 'ML Algorithms', 'Keras',
-                                              'Pytorch', 'Probability', 'Scikit-learn', 'Tensorflow', "Flask",
-                                              'Streamlit']
+                        recommended_skills = ['Data Visualization', 'Predictive Analysis', 'Statistical Modeling', 'Data Mining', 'Clustering & Classification', 'Data Analytics', 'Quantitative Analysis', 'Web Scraping', 'ML Algorithms', 'Keras', 'Pytorch', 'Probability', 'Scikit-learn', 'Tensorflow', "Flask", 'Streamlit']
                         break
-
-                    ## Web development recommendation
-                    elif i.lower() in web_keyword:
-                        print(i.lower())
+                    elif skill_lower in web_keyword:
                         reco_field = 'Web Development'
-                        st.success("** Our analysis says you are looking for Web Development Jobs **")
-                        recommended_skills = ['React', 'Django', 'Node JS', 'React JS', 'php', 'laravel', 'Magento',
-                                              'wordpress', 'Javascript', 'Angular JS', 'c#', 'Flask', 'SDK']
-
-                        st.markdown(
-                            '''<h4 style='text-align: left; color: #1ed760;'>Adding this skills to resume will boost🚀 the chances of getting a Job💼</h4>''',
-                            unsafe_allow_html=True)
+                        recommended_skills = ['React', 'Django', 'Node JS', 'React JS', 'php', 'laravel', 'Magento', 'wordpress', 'Javascript', 'Angular JS', 'c#', 'Flask', 'SDK']
                         break
-
-                    ## Android App Development
-                    elif i.lower() in android_keyword:
-                        print(i.lower())
+                    elif skill_lower in android_keyword:
                         reco_field = 'Android Development'
-                        st.success("** Our analysis says you are looking for Android App Development Jobs **")
-                        recommended_skills = ['Android', 'Android development', 'Flutter', 'Kotlin', 'XML', 'Java',
-                                              'Kivy', 'GIT', 'SDK', 'SQLite']
+                        recommended_skills = ['Android', 'Android development', 'Flutter', 'Kotlin', 'XML', 'Java', 'Kivy', 'GIT', 'SDK', 'SQLite']
                         break
-
-                    ## IOS App Development
-                    elif i.lower() in ios_keyword:
-                        print(i.lower())
+                    elif skill_lower in ios_keyword:
                         reco_field = 'IOS Development'
-                        st.success("** Our analysis says you are looking for IOS App Development Jobs **")
-                        recommended_skills = ['IOS', 'IOS Development', 'Swift', 'Cocoa', 'Cocoa Touch', 'Xcode',
-                                              'Objective-C', 'SQLite', 'Plist', 'StoreKit', "UI-Kit", 'AV Foundation',
-                                              'Auto-Layout']
+                        recommended_skills = ['IOS', 'IOS Development', 'Swift', 'Cocoa', 'Cocoa Touch', 'Xcode', 'Objective-C', 'SQLite', 'Plist', 'StoreKit', "UI-Kit", 'AV Foundation', 'Auto-Layout']
                         break
-
-                    ## Ui-UX Recommendation
-                    elif i.lower() in uiux_keyword:
-                        print(i.lower())
+                    elif skill_lower in uiux_keyword:
                         reco_field = 'UI-UX Development'
-                        st.success("** Our analysis says you are looking for UI-UX Development Jobs **")
-                        recommended_skills = ['UI', 'User Experience', 'Adobe XD', 'Figma', 'Zeplin', 'Balsamiq',
-                                              'Prototyping', 'Wireframes', 'Storyframes', 'Adobe Photoshop', 'Editing',
-                                              'Illustrator', 'After Effects', 'Premier Pro', 'Indesign', 'Wireframe',
-                                              'Solid', 'Grasp', 'User Research']
+                        recommended_skills = ['UI', 'User Experience', 'Adobe XD', 'Figma', 'Zeplin', 'Balsamiq', 'Prototyping', 'Wireframes', 'Storyframes', 'Adobe Photoshop', 'Editing', 'Illustrator', 'After Effects', 'Premier Pro', 'Indesign', 'Wireframe', 'Solid', 'Grasp', 'User Research']
                         break
 
+                if reco_field:
+                    st.subheader(f"**Recommended Field: {reco_field}**")
+                    st.subheader("**Recommended Skills to Add**")
+                    for skill in recommended_skills:
+                        st.write(skill)
+
+                    recommended_jobs = recommend_jobs(reco_field, resume_data['skills'])
+                    if recommended_jobs:
+                        st.subheader("**Recommended Jobs**")
+                        for job in recommended_jobs:
+                            st.write(f"**Title**: {job['Title']}")
+                            st.write(f"**Company**: {job['Company']}")
+                            st.write(f"**Location**: {job['Location']}")
+                            st.write(f"**Job URL**: [Link]({job['Job URL']})")
+                            st.write(f"**Matched Skills**: {', '.join(job['Matched Skills'])}")
+                            st.write("---")
 
 if __name__ == '__main__':
     run()
