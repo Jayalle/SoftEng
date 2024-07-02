@@ -41,11 +41,19 @@ def insert_data(name, email, res_score, timestamp, no_of_pages, reco_field, cand
 # Function to recommend jobs based on the resume
 def recommend_jobs(field, skills):
     csv_files = {
-        'Data Science': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\data_scientist.xlsx',
-        'Web Development': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\web_developer.xlsx',
-        'Android Development': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\java_dev.xlsx',
-        'IOS Development': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\ios_dev.xlsx',
-        'UI-UX Development': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\ui_ux.xlsx'
+        'Data Science': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\data_scientist.xlsx',
+        'Web Development': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\web_developer.xlsx',
+        'Android Development': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\android_dev.xlsx',
+        'IOS Development': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\ios_dev.xlsx',
+        'UI-UX Development': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\ui_ux.xlsx',
+        'Java Development': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\java_dev.xlsx',
+        'Development Operations Manager': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\dev_ops.xlsx',
+        'IT Security Specialist': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\it_sec.xlsx',
+        'Application Analyst': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\app_analyst.xlsx',
+        'Business Intelligence Analyst': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\bi_analyst.xlsx',
+        'Software Test Engineer' : 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\test_eng.xlsx',
+        'Database Administrator' :'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\db_admin.xlsx',
+        'Information Technology Manager' : 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\it_man.xlsx'
     }
 
     if field not in csv_files:
@@ -148,6 +156,7 @@ def run():
                 insert_data(resume_data['name'], resume_data['email'], 'NA', str(datetime.datetime.now()), resume_data['no_of_pages'], 'NA', cand_level, str(resume_data['skills']), 'NA', 'NA')
 
                 # Job recommendation logic
+                # Job recommendation logic
                 recommended_skills = []
                 reco_field = ''
                 ds_keyword = ['tensorflow', 'keras', 'pytorch', 'machine learning', 'deep learning', 'flask', 'streamlit']
@@ -155,6 +164,14 @@ def run():
                 android_keyword = ['android', 'android development', 'flutter', 'kotlin', 'xml', 'kivy']
                 ios_keyword = ['ios', 'ios development', 'swift', 'cocoa', 'cocoa touch', 'xcode']
                 uiux_keyword = ['ux', 'adobe xd', 'figma', 'zeplin', 'balsamiq', 'ui', 'prototyping', 'wireframes', 'storyframes', 'adobe photoshop', 'photoshop', 'editing', 'adobe illustrator', 'illustrator', 'adobe after effects', 'after effects', 'adobe premier pro', 'premier pro', 'adobe indesign', 'indesign', 'wireframe', 'solid', 'grasp', 'user research', 'user experience']
+                java_dev_keywords = ['java developer', 'java', 'jdk', 'spring', 'hibernate', 'maven', 'gradle']
+                dev_ops_manager_keywords = ['development operations manager', 'devops', 'continuous integration', 'continuous deployment', 'docker', 'kubernetes', 'jenkins']
+                it_security_keywords = ['it security specialist', 'cybersecurity', 'network security', 'information security', 'firewall', 'penetration testing']
+                application_analyst_keywords = ['application analyst', 'application support', 'business analyst', 'software analyst']
+                bi_analyst_keywords = ['business intelligence analyst', 'bi analyst', 'data analyst', 'data visualization', 'sql']
+                test_engineer_keywords = ['software test engineer', 'qa engineer', 'automation testing', 'manual testing', 'selenium', 'junit']
+                db_admin_keywords = ['database administrator', 'db admin', 'sql server', 'mysql', 'oracle', 'database management']
+                it_manager_keywords = ['information technology manager', 'it manager', 'it operations', 'it service management', 'project management']
 
                 for skill in resume_data['skills']:
                     skill_lower = skill.lower()
@@ -178,6 +195,39 @@ def run():
                         reco_field = 'UI-UX Development'
                         recommended_skills = ['UI', 'User Experience', 'Adobe XD', 'Figma', 'Zeplin', 'Balsamiq', 'Prototyping', 'Wireframes', 'Storyframes', 'Adobe Photoshop', 'Editing', 'Illustrator', 'After Effects', 'Premier Pro', 'Indesign', 'Wireframe', 'Solid', 'Grasp', 'User Research']
                         break
+                    elif skill_lower in java_dev_keywords:
+                        reco_field = 'Java Developer'
+                        recommended_skills = ['Java', 'JDK', 'Spring', 'Hibernate', 'Maven', 'Gradle', 'RESTful APIs', 'Microservices', 'Unit Testing', 'Integration Testing']
+                        break
+                    elif skill_lower in dev_ops_manager_keywords:
+                        reco_field = 'Development Operations Manager'
+                        recommended_skills = ['DevOps', 'Continuous Integration', 'Continuous Deployment', 'Docker', 'Kubernetes', 'Jenkins', 'Infrastructure as Code']
+                        break
+                    elif skill_lower in it_security_keywords:
+                        reco_field = 'IT Security Specialist'
+                        recommended_skills = ['Cybersecurity', 'Network Security', 'Information Security', 'Firewall Management', 'Penetration Testing', 'Security Audits']
+                        break
+                    elif skill_lower in application_analyst_keywords:
+                        reco_field = 'Application Analyst'
+                        recommended_skills = ['Application Support', 'Business Analysis', 'Requirements Gathering', 'Software Documentation', 'Problem-Solving']
+                        break
+                    elif skill_lower in bi_analyst_keywords:
+                        reco_field = 'Business Intelligence Analyst'
+                        recommended_skills = ['Business Intelligence', 'Data Analysis', 'Data Visualization Tools', 'SQL', 'ETL Processes', 'Dashboard Design']
+                        break
+                    elif skill_lower in test_engineer_keywords:
+                        reco_field = 'Software Test Engineer'
+                        recommended_skills = ['Manual Testing', 'Automation Testing', 'Selenium', 'JUnit', 'Test Planning', 'Bug Tracking']
+                        break
+                    elif skill_lower in db_admin_keywords:
+                        reco_field = 'Database Administrator'
+                        recommended_skills = ['SQL Server', 'MySQL', 'Oracle', 'Database Tuning', 'Backup & Recovery', 'Database Security']
+                        break
+                    elif skill_lower in it_manager_keywords:
+                        reco_field = 'Information Technology Manager'
+                        recommended_skills = ['IT Operations', 'Project Management', 'IT Service Management', 'Leadership', 'Budgeting', 'Vendor Management']
+                        break
+
 
                 if reco_field:
                     st.subheader(f"**Recommended Field: {reco_field}**")
