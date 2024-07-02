@@ -8,6 +8,9 @@ from pydparser import ResumeParser
 from pdfminer.high_level import extract_text
 from PIL import Image
 
+##TODO: pip install openpyxl if error
+
+
 # Ensure NLTK data path includes the correct directory
 nltk.data.path.append("../Uploaded_Resumes")
 
@@ -41,19 +44,19 @@ def insert_data(name, email, res_score, timestamp, no_of_pages, reco_field, cand
 # Function to recommend jobs based on the resume
 def recommend_jobs(field, skills):
     csv_files = {
-        'Data Science': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\data_scientist.xlsx',
-        'Web Development': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\web_developer.xlsx',
-        'Android Development': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\android_dev.xlsx',
-        'IOS Development': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\ios_dev.xlsx',
-        'UI-UX Development': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\ui_ux.xlsx',
-        'Java Development': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\java_dev.xlsx',
-        'Development Operations Manager': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\dev_ops.xlsx',
-        'IT Security Specialist': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\it_sec.xlsx',
-        'Application Analyst': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\app_analyst.xlsx',
-        'Business Intelligence Analyst': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\bi_analyst.xlsx',
-        'Software Test Engineer' : 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\test_eng.xlsx',
-        'Database Administrator' :'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\db_admin.xlsx',
-        'Information Technology Manager' : 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\it_man.xlsx'
+        'Data Science': './CSV_files/data_scientist.xlsx',
+        'Web Development': './CSV_files/web_developer.xlsx',
+        'Android Development': './CSV_files/android_dev.xlsx',
+        'IOS Development': './CSV_files/ios_dev.xlsx',
+        'UI-UX Development': './CSV_files/ui_ux.xlsx',
+        'Java Development': './CSV_files/java_dev.xlsx',
+        'Development Operations Manager': './CSV_files/dev_ops.xlsx',
+        'IT Security Specialist': './CSV_files/it_sec.xlsx',
+        'Application Analyst': './CSV_files/app_analyst.xlsx',
+        'Business Intelligence Analyst': './CSV_files/bi_analyst.xlsx',
+        'Software Test Engineer': './CSV_files/test_eng.xlsx',
+        'Database Administrator':'./CSV_files/db_admin.xlsx',
+        'Information Technology Manager': './CSV_files/it_man.xlsx'
     }
 
     if field not in csv_files:
@@ -155,7 +158,6 @@ def run():
                 # Insert data into database
                 insert_data(resume_data['name'], resume_data['email'], 'NA', str(datetime.datetime.now()), resume_data['no_of_pages'], 'NA', cand_level, str(resume_data['skills']), 'NA', 'NA')
 
-                # Job recommendation logic
                 # Job recommendation logic
                 recommended_skills = []
                 reco_field = ''
