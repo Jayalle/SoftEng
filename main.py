@@ -62,6 +62,7 @@ def recommend_jobs(field, skills):
         job_description = str(row['description']).lower() if pd.notna(row['description']) else ''
         job_keywords = job_description.split()
         matched_skills = [skill for skill in skills if skill.lower() in job_keywords]
+        similarity_score = len(matched_skills)  # Simple count of matched skills as similarity score
 
         if matched_skills:
             recommended_jobs.append({
@@ -69,10 +70,15 @@ def recommend_jobs(field, skills):
                 'Company': row['company'],
                 'Location': row['location'],
                 'Job URL': row['job_url'],
-                'Matched Skills': matched_skills
+                'Matched Skills': matched_skills,
+                'Similarity Score': similarity_score
             })
 
-    return recommended_jobs
+    # Sort recommended jobs by similarity score (descending)
+    recommended_jobs.sort(key=lambda x: x['Similarity Score'], reverse=True)
+
+    return recommended_jobs[:10]  # Return top 10 jobs based on similarity score
+
 # Main function to run the application
 def run():
     st.title("SkillSync: Job Recommendation")
@@ -182,7 +188,8 @@ def run():
                     recommended_jobs = recommend_jobs(reco_field, resume_data['skills'])
                     if recommended_jobs:
                         st.subheader("**Recommended Jobs**")
-                        for job in recommended_jobs:
+                        for idx, job in enumerate(recommended_jobs[:10], start=1):
+                            st.write(f"**Rank {idx}**")
                             st.write(f"**Title**: {job['Title']}")
                             st.write(f"**Company**: {job['Company']}")
                             st.write(f"**Location**: {job['Location']}")
