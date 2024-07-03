@@ -17,43 +17,61 @@ nltk.download("punkt")
 
 # Function to read PDF and return text
 def pdf_reader(file):
-    text = extract_text(file)
-    return text
+    try:
+        text = extract_text(file)
+        return text
+    except Exception as e:
+        logging.error(f"Error reading PDF: {e}")
+        st.error("There was an error reading the PDF file. Please ensure it's a valid PDF.")
+        return ""
 
 # Function to display PDF
 def show_pdf(file_path):
-    with open(file_path, "rb") as f:
-        base64_pdf = base64.b64encode(f.read()).decode('utf-8')
-    pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="700" height="1000" type="application/pdf"></iframe>'
-    st.markdown(pdf_display, unsafe_allow_html=True)
+    try:
+        with open(file_path, "rb") as f:
+            base64_pdf = base64.b64encode(f.read()).decode('utf-8')
+        pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="700" height="1000" type="application/pdf"></iframe>'
+        st.markdown(pdf_display, unsafe_allow_html=True)
+    except FileNotFoundError:
+        logging.error(f"File not found: {file_path}")
+        st.error("The file was not found. Please upload a valid PDF file.")
+    except Exception as e:
+        logging.error(f"Error displaying PDF: {e}")
+        st.error("There was an error displaying the PDF file.")
 
 # Function to insert data into SQLite database
 def insert_data(name, email, res_score, timestamp, no_of_pages, reco_field, cand_level, skills, recommended_skills, courses):
-    connection = sqlite3.connect("se2project.db")
-    cursor = connection.cursor()
-    DB_table_name = 'user_data'
-    insert_sql = f"INSERT INTO {DB_table_name} VALUES (?,?,?,?,?,?,?,?,?,?,?)"
-    rec_values = (None, name, email, str(res_score), timestamp, str(no_of_pages), reco_field, cand_level, skills, recommended_skills, courses)
-    cursor.execute(insert_sql, rec_values)
-    connection.commit()
-    connection.close()
-
+    try:
+        connection = sqlite3.connect("se2project.db")
+        cursor = connection.cursor()
+        DB_table_name = 'user_data'
+        insert_sql = f"INSERT INTO {DB_table_name} VALUES (?,?,?,?,?,?,?,?,?,?,?)"
+        rec_values = (None, name, email, str(res_score), timestamp, str(no_of_pages), reco_field, cand_level, skills, recommended_skills, courses)
+        cursor.execute(insert_sql, rec_values)
+        connection.commit()
+    except sqlite3.Error as e:
+        logging.error(f"Database error: {e}")
+        st.error("There was an error inserting data into the database.")
+    finally:
+        if connection:
+            connection.close()
+            
 # Function to recommend jobs based on the resume
 def recommend_jobs(field, skills):
     csv_files = {
-        'Data Science': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\data_scientist.xlsx',
-        'Web Development': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\web_developer.xlsx',
-        'Android Development': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\android_dev.xlsx',
-        'IOS Development': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\ios_dev.xlsx',
-        'UI-UX Development': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\ui_ux.xlsx',
-        'Java Development': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\java_dev.xlsx',
-        'Development Operations Manager': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\dev_ops.xlsx',
-        'IT Security Specialist': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\it_sec.xlsx',
-        'Application Analyst': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\app_analyst.xlsx',
-        'Business Intelligence Analyst': 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\bi_analyst.xlsx',
-        'Software Test Engineer' : 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\test_eng.xlsx',
-        'Database Administrator' :'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\db_admin.xlsx',
-        'Information Technology Manager' : 'C:\\Users\\laptop\\SoftwareEng2\\SoftEng\\CSV_files\\it_man.xlsx'
+       'Data Science': './CSV_files/data_scientist.xlsx',
+        'Web Development': './CSV_files/web_developer.xlsx',
+        'Android Development': './CSV_files/android_dev.xlsx',
+        'IOS Development': './CSV_files/ios_dev.xlsx',
+        'UI-UX Development': './CSV_files/ui_ux.xlsx',
+        'Java Development': './CSV_files/java_dev.xlsx',
+        'Development Operations Manager': './CSV_files/dev_ops.xlsx',
+        'IT Security Specialist': './CSV_files/it_sec.xlsx',
+        'Application Analyst': './CSV_files/app_analyst.xlsx',
+        'Business Intelligence Analyst': './CSV_files/bi_analyst.xlsx',
+        'Software Test Engineer': './CSV_files/test_eng.xlsx',
+        'Database Administrator': './CSV_files/db_admin.xlsx',
+        'Information Technology Manager': './CSV_files/it_man.xlsx'
     }
 
     if field not in csv_files:
@@ -155,7 +173,6 @@ def run():
                 # Insert data into database
                 insert_data(resume_data['name'], resume_data['email'], 'NA', str(datetime.datetime.now()), resume_data['no_of_pages'], 'NA', cand_level, str(resume_data['skills']), 'NA', 'NA')
 
-                # Job recommendation logic
                 # Job recommendation logic
                 recommended_skills = []
                 reco_field = ''
