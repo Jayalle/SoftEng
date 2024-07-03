@@ -46,7 +46,8 @@ def insert_data(name, email, res_score, timestamp, no_of_pages, reco_field, cand
         cursor = connection.cursor()
         DB_table_name = 'user_data'
         insert_sql = f"INSERT INTO {DB_table_name} VALUES (?,?,?,?,?,?,?,?,?,?,?)"
-        rec_values = (None, name, email, str(res_score), timestamp, str(no_of_pages), reco_field, cand_level, skills, recommended_skills, courses)
+        rec_values = (None, name, email, str(res_score), timestamp, str(no_of_pages), 
+                      reco_field, cand_level, skills, recommended_skills, courses)
         cursor.execute(insert_sql, rec_values)
         connection.commit()
     except sqlite3.Error as e:
@@ -55,7 +56,7 @@ def insert_data(name, email, res_score, timestamp, no_of_pages, reco_field, cand
     finally:
         if connection:
             connection.close()
-            
+
 # Function to recommend jobs based on the resume
 def recommend_jobs(field, skills):
     csv_files = {
